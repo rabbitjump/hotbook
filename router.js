@@ -18,6 +18,12 @@ var routeInfos = [
     handler : controllers.home
   },
   {
+    route : '/category/:category',
+    template : 'category',
+    middleware : [addImporter],
+    handler : controllers.category
+  },
+  {
     method : 'post',
     route : '/httplog',
     handler : controllers['http-log']

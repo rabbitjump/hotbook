@@ -1,0 +1,43 @@
+@import 'nib';
+
+.categoryPage
+  .header
+    line-height 40px
+    border-bottom 1px solid #d2d2d2
+    text-align center
+  .tags
+    margin 0
+    padding 0
+    li
+      width 25%
+      display inline-block
+      list-style none
+      &:nth-child(1) a
+        background-color #b8b168
+      &:nth-child(2) a
+        background-color #68b878
+      &:nth-child(3) a
+        background-color red
+      &:nth-child(4) a
+        background-color yellow
+      a
+        text-decoration none
+        color #fff
+        display block
+        $itemWidth = 60px
+        width $itemWidth
+        line-height $itemWidth
+        border-radius $itemWidth
+        text-align center
+        margin 10px auto
+  .recommand
+    .title
+      .more
+        float right
+      .line
+        border-top 1px solid #ccc
+        margin-left 81px
+        margin-top -10px
+        margin-right 50px
+        
+    

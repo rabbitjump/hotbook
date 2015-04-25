@@ -1,0 +1,9 @@
+extends ./layout
+
+
+block bodyContainer
+  .homePage(ng-controller='HomePageController')
+    div 
+
+  - importer.import('/js/home.js');
+  - importer.import('/css/home.css');

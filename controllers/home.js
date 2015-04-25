@@ -30,7 +30,6 @@ module.exports = function *(){
         desc : '天地不仁以万物为刍狗！圣人不仁以百姓为刍狗！死里逃生，脱胎换骨。仇人，藏于九地之下！江湖，朝堂，何处寻觅？江湖隐士，遁世仙门，门阀世家，纷纷粉墨登场，数千年前的隐秘被揭开。天道何在！爱恨情仇，如何选择？',
         cover : 'http://img1.chuangshi.qq.com/upload/cover/20150125/cb_54c3c80b9af38.jpg'
       }
-
     ]
   };
 };
