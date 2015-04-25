@@ -1,3 +1,4 @@
+'use strict';
 var gulp = require('gulp');
 var path = require('path');
 var jshint = require('gulp-jshint');
@@ -147,7 +148,11 @@ gulp.task('static_version', ['static_merge'], function(){
 
 
 gulp.task('version', function(cbf){
-  fs.writeFileSync('./version', moment().format());
+  var version = moment().format();
+  fs.writeFileSync('./version', version);
+  var pm2Json = JSON.parse(fs.readFileSync('./pm2.json'));
+  pm2Json.env.appVersion = version;
+  fs.writeFileSync('./pm2.json', JSON.stringify(pm2Json, null, 2));
   cbf();
 });
 

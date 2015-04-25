@@ -15,13 +15,14 @@ html(lang='zh-CN', ng-app='jtApp')
     //CSS_FILES_CONTAINER
     if pattern
       - importer.import('/component/debug.js');
-    - importer.import('/component/normalize.css', '/component/angular.js', '/component/angular-local-storage.js');
-    - importer.import('/service/utils.js', '/service/http_log.js', '/service/debug.js');
-    - importer.import('/js/global.js');
+    - importer.import('/component/bootstrap.css', '/component/jquery.js', '/component/angular.js', '/component/lodash.js', '/component/angular-local-storage.js', '/component/sha1.js');
+    - importer.import('/service/http-log.js', '/service/debug.js', '/service/user.js', '/js/directive.js');
+    - importer.import('/css/global.css', '/js/global.js');
 
-  body
+  body(ng-controller='AppController as app')
     block bodyContainer
   include ./globals
+  include ./login
   script.
     TIMING.end('html');
     TIMING.start('js');

@@ -1,4 +1,6 @@
+'use strict';
 var _ = require('lodash');
+var debug = require('../helpers/debug');
 var config = require('../config');
 var router = require('koa-router')();
 var views = require('koa-views');
@@ -100,6 +102,7 @@ function logComponents(template, importer){
  * @return {[type]}            [description]
  */
 function getRouteHandlers(routeInfos){
+  debug('routeInfos:%j', routeInfos);
   _.forEach(routeInfos, function(routeInfo){
     var template = routeInfo.template;
     var middleware = routeInfo.middleware || [];

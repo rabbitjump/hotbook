@@ -20,47 +20,12 @@ module.factory('httpLog', ['$q', '$injector', 'localStorageService', function($q
   var postInterval = 120 * 1000;
   var postUrl = '/httplog';
 
-  var post = function(){
-    var $http = $injector.get('$http');
-
-    if(successLog.length || errorLog.length){
-      $http.post(postUrl, httpLogStorage).success(function(res){
-        successLog.length = 0;
-        errorLog.length = 0;
-        save();
-        setTimeout(post, postInterval);
-      }).error(function(res){
-        setTimeout(post, postInterval);
-      });
-    }
-  };
-
-  var save = function(){
-    localStorageService.set('httpLog', httpLogStorage);
-  };
-
-  var alertDeprecate = function(headers){
-    var deprecate = headers('JT-Deprecate');
-    if(deprecate && CONFIG.env === 'development'){
-      alert('url:' + url + 'is deprecate, ' + deprecate);
-    }
-  };
-
   // 如果一开始log已经有20个，直接往后台post
   if(successLog.length + errorLog.length > 10){
     setTimeout(post, 1);
   }else{
     setTimeout(post, postInterval);
   }
-
-  // 判断该请求是否忽略其统计
-  var isIgnore = function(url){
-    if(url === postUrl || url.indexOf('httplog=false') != -1){
-      return true;
-    }else{
-      return false;
-    }
-  };
 
   var httpLog = {
     request : function(config){
@@ -103,6 +68,56 @@ module.factory('httpLog', ['$q', '$injector', 'localStorageService', function($q
     }
   };
   return httpLog;
+
+
+
+  // 判断该请求是否忽略其统计
+  function isIgnore(url){
+    if(url === postUrl || url.indexOf('httplog=false') != -1){
+      return true;
+    }else{
+      return false;
+    }
+  }
+
+  /**
+   * [alertDeprecate 如果发现后端请求有Deprecate，在开发环境中，弹出警告窗]
+   * @param  {[type]} headers [description]
+   * @return {[type]}         [description]
+   */
+  function alertDeprecate(headers){
+    var deprecate = headers('JT-Deprecate');
+    if(deprecate && CONFIG.env === 'development'){
+      alert('url:' + url + 'is deprecate, ' + deprecate);
+    }
+  }
+
+  /**
+   * [save 保存统计数据到local storage]
+   * @return {[type]} [description]
+   */
+  function save(){
+    localStorageService.set('httpLog', httpLogStorage);
+  }
+
+  /**
+   * [post 发送统计数据到服务器]
+   * @return {[type]} [description]
+   */
+  function post(){
+    var $http = $injector.get('$http');
+    if(successLog.length || errorLog.length){
+      $http.post(postUrl, httpLogStorage).success(function(res){
+        successLog.length = 0;
+        errorLog.length = 0;
+        save();
+        setTimeout(post, postInterval);
+      }).error(function(res){
+        setTimeout(post, postInterval);
+      });
+    }
+  }
+
 }]);
 
 })(this);

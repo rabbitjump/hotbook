@@ -1,13 +1,8 @@
 ;(function(global){
 'use strict';
-var fn = function($scope, $http, debug){
-  $http.get('/user').success(function(res){
-
-  }).error(function(err){
-
-  });
+var fn = function($scope, $http, debug, user){
 };
-fn.$inject = ['$scope', '$http', 'debug'];
+fn.$inject = ['$scope', '$http', 'debug', 'user'];
 
 angular.module('jtApp')
   .controller('HomePageController', fn);

@@ -1,10 +1,11 @@
 'use strict';
+var debug = require('../helpers/debug');
 module.exports = function *(){
   var data = this.request.body;;
   console.info(JSON.stringify(data));
   var timing = data.timing;
   if(timing){
-    var result = {
+    let result = {
       loadEvent : timing.loadEventEnd - timing.loadEventStart,
       domContentLoadedEvent : timing.domContentLoadedEventEnd - timing.domContentLoadedEventStart,
       response : timing.responseEnd - timing.responseStart,
@@ -15,6 +16,7 @@ module.exports = function *(){
       request : timing.responseEnd - timing.requestStart,
       dom : timing.domComplete - timing.domLoading
     };
+    console.info(result);
   }
 
   this.body = {

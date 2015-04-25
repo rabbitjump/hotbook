@@ -1,19 +1,24 @@
 {
-  "index": {
+  "home": {
     "css": [
-      "/component/normalize.css",
+      "/component/bootstrap.css",
+      "/css/global.css",
       "/css/home.css"
     ],
     "js": [
       "/component/debug.js",
+      "/component/jquery.js",
       "/component/angular.js",
+      "/component/lodash.js",
       "/component/angular-local-storage.js",
-      "/service/utils.js",
-      "/service/http_log.js",
+      "/component/sha1.js",
+      "/service/http-log.js",
       "/service/debug.js",
+      "/service/user.js",
+      "/js/directive.js",
       "/js/global.js",
       "/js/home.js"
     ],
-    "modifiedAt": "2015-03-24 18:27:05"
+    "modifiedAt": "2015-04-14 23:33:08"
   }
 }

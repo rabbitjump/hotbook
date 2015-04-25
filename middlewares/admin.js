@@ -3,26 +3,21 @@ var co = require('co');
 var router = require('koa-router')();
 var path = require('path');
 var fs = require('fs');
+var _ = require('lodash');
 var config = require('../config');
 var versionFile = path.join(__dirname, '../version');
-var appVersion = 'no version';
-var jtpromise = require('../helpers/jtpromise');
+var pm2 = require('../helpers/pm2');
 
 
-module.exports = function(adminPath){
-
-  router.get('/jt/version', validate, versionHandler);
+module.exports = function(){
+  router.get('/infos', validate, allInfos);
   return router.routes();;
 };
 
 /**
- * [getVersion 获取版本号]
+ * [validate 判断是否有权限]
  * @return {[type]} [description]
  */
-function *getVersion(){
-  return yield jtpromise.wrap(fs.readFile, versionFile, 'utf8');
-}
-
 function *validate(next){
   var crypto = require('crypto');
   var key = this.query.key;
@@ -35,28 +30,17 @@ function *validate(next){
   }
 }
 
-
 /**
- * [versionHandler 响应http请求，返回取当前运行版本号与当前代码版本号]
+ * [allInfos 响应http请求，返回当前pm2相关的进程信息]
  * @return {[type]} [description]
  */
-function *versionHandler(){
-  try{
-    var version = yield getVersion();
-  }catch(err){
-    console.error(err);
-    version = 'no version';
-  }
-  this.body = {
-    running : appVersion,
-    code : version
+function *allInfos(){
+  var processInfos = yield pm2.list();
+  var codeVersion = yield function(done){
+    fs.readFile(versionFile, 'utf8', done);
   };
+  _.forEach(processInfos, function(info){
+    info.codeVersion = codeVersion;
+  });
+  this.body = processInfos;
 }
-
-
-co(function *(){
-  appVersion = yield getVersion();
-}).catch(function(err){
-  console.error(err);
-});
-

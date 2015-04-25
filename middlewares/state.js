@@ -14,6 +14,7 @@ module.exports = function(){
   return function *(next){
     var state = this.state;
     state.STATIC_URL_PREFIX = config.staticUrlPrefix;
+    state.APP_URL_PREFIX = config.appUrlPrefix;
     state.ENV = config.env;
     state._ = _;
     state.moment = moment;

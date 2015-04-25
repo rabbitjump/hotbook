@@ -1,12 +1,14 @@
 'use strict';
 var config = require('../config');
 var _ = require('lodash');
+var debug = require('../helpers/debug');
 /**
  * [exports 将debug的相关参数写到state]
  * @return {[type]} [description]
  */
 module.exports = function (params){
   params = params || {};
+  debug('debug params:%j', params);
   return function *(next){
     var state = this.state;
     var query = this.query;

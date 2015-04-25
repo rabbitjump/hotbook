@@ -1,7 +1,8 @@
 'use strict';
 var _ = require('lodash');
+var debug = require('../helpers/debug');
 module.exports = function *(){
-  var ua = this.headers['user-agent'];
+  var ua = this.header['user-agent'];
   var data = this.request.body;
   var ip = this.ips[0] || this.ip;
   var responseData = {

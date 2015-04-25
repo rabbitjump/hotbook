@@ -6,7 +6,8 @@ var path = require('path');
 var config = require('../config');
 var fs = require('fs');
 var co = require('co');
-var jtpromise = require('../helpers/jtpromise');
+var debug = require('../helpers/debug');
+
 /**
  * [exports 静态文件处理]
  * @param  {[type]} staticPath [静态文件所在目录]
@@ -20,19 +21,9 @@ module.exports = function(staticPath, options){
   var maxAge = options.maxAge;
   var mount = options.mount || '';
   var length = mount.length;
-  
-  var notFoundMaxAge = 600;
+  var notFoundMaxAge = Math.min(maxAge, 300);
+  debug('static path:%s, options:%j', staticPath, options);
   return function *(next){
-    if(mount){
-      var url = this.request.url;
-      if(url.substring(0, length) === mount){
-        this.request.url = url.substring(length);
-      }else{
-        yield* next;
-        return;
-      }
-    }
-
     yield handler.call(this, next);
     // 开发环境下，请求到stylus等文件的处理
     if(config.env === 'development' && !this.body){
@@ -55,11 +46,13 @@ module.exports = function(staticPath, options){
         'Vary' : 'Accept-Encoding'
       });
     }else{
-      this.set({
-        'Expires' : moment().add(notFoundMaxAge, 'seconds').toString(),
-        'Cache-Control' : util.format('public, max-age=%d', notFoundMaxAge),
-        'Vary' : 'Accept-Encoding'
-      });
+      if(notFoundMaxAge){
+        this.set({
+          'Expires' : moment().add(notFoundMaxAge, 'seconds').toString(),
+          'Cache-Control' : util.format('public, max-age=%d', notFoundMaxAge),
+          'Vary' : 'Accept-Encoding'
+        });
+      }
       this.throw(404);
     }
   }
@@ -74,17 +67,21 @@ function *parseStylus(file){
   file = file.replace('.css', '.styl');
   var nib = require('nib');
   var stylus = require('stylus');
-  jtpromise.wrap(fs.exists, file);
-  var exists = yield jtpromise.wrap(fs.exists, file);
+  var exists = yield function(done){
+    fs.exists(file, function(exists){
+      done(null, exists);
+    });
+  };
   if(!exists){
     return;
   }
-  var data = yield jtpromise.wrap(fs.readFile, file, 'utf8');
+  var data = yield function(done){
+    fs.readFile(file, 'utf8', done);
+  };
 
-  function render(cbf){
-    stylus(data).set('filename', file).use(nib()).render(cbf);
-  }
-  var css = yield jtpromise.wrap(render);
+  var css = yield function(done){
+    stylus(data).set('filename', file).use(nib()).render(done);
+  };
 
   return css;
 }

@@ -3,7 +3,7 @@ var os = require('os');
 var util = require('util');
 var _ = require('lodash');
 var config = require('../config');
-var debug = require('debug')('jt.koa');
+var debug = require('../helpers/debug');
 /**
  * [exports 添加信息到response header]
  * @param  {[type]} processName [description]
@@ -18,10 +18,10 @@ module.exports = function(processName){
   return function *(next){
     var start = Date.now();
     handlingReqTotal++;
-    requestTotal++;
-
+    var index = ++requestTotal;
     var ctx = this;
     var res = this.res;
+    var renderTimeConsuming = 0;
     var onfinish = done.bind(null, 'finish');
     var onclose = done.bind(null, 'close');
 
@@ -36,14 +36,14 @@ module.exports = function(processName){
       var method = ctx.method;
       var url = ctx.request.url;
       var httpVersion = ctx.req.httpVersion;
-      var headers = ctx.request.headers;
+      var header = ctx.request.header;
       var length = -1;
       if(!_.isUndefined(ctx.length)){
         length = ctx.length;
       }else{
         length = ctx.body && ctx.body.length;
       }
-      var str = util.format('%s "%s %s HTTP/%s" %d %d %d-%dms "%s" "%s" %d-%d', ip, method, url, httpVersion, ctx.status, length, renderTimeConsuming, use, headers.referer || '', headers['user-agent'], handlingReqTotal, requestTotal);
+      var str = util.format('%s "%s %s HTTP/%s" %d %d %d-%dms "%s" "%s" %d-%d-%d', ip, method, url, httpVersion, ctx.status, length, renderTimeConsuming, use, header.referer || '', header['user-agent'], handlingReqTotal, index, requestTotal);
       handlingReqTotal--;
       if(config.env !== 'development'){
         console.info(str);
@@ -51,8 +51,10 @@ module.exports = function(processName){
     }
     yield* next;
     var use = Date.now() - start;
-    var renderTimeConsuming = ctx._renderTimeConsuming || 0;
-    var jtInfo = util.format('%s,%s,%d,%d,%d,%d,%d', hostname, processName, pid, handlingReqTotal, requestTotal, renderTimeConsuming, use);
+    if(ctx._renderTimeConsuming){
+      renderTimeConsuming = ctx._renderTimeConsuming;
+    }
+    var jtInfo = util.format('%s,%s,%d,%d,%d,%d,%d,%d', hostname, processName, pid, handlingReqTotal, requestTotal, renderTimeConsuming, use, Date.now());
     ctx.set('JT-Info', jtInfo);
   };
 };

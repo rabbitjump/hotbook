@@ -3,12 +3,17 @@ var requireTree = require('require-tree');
 var controllers = requireTree('./controllers');
 var router = require('./helpers/router');
 var config = require('./config');
+var _ = require('lodash');
 var addImporter = getImporterMiddleware();
+
+var redisOptions = getRedisOptions();
+var session = require('./middlewares/session')(redisOptions);
+var nocache = require('./middlewares/query-checker')('cache=false')
 
 var routeInfos = [
   {
     route : '/',
-    template : 'index',
+    template : 'home',
     middleware : [addImporter],
     handler : controllers.home
   },
@@ -23,7 +28,8 @@ var routeInfos = [
     handler : controllers.statistics
   },
   {
-    method : ['get', 'post'],
+    method : 'all',
+    middleware : [nocache, session],
     route : '/user',
     handler : controllers.user
   }
@@ -57,4 +63,20 @@ function getImporterMiddleware(){
     importerOptions.merge = staticMerge;
   }
   return importer(importerOptions);
+}
+
+
+/**
+ * [getRedisOptions 返回redis的配置]
+ * @return {[type]} [description]
+ */
+function getRedisOptions(){
+  var options = _.extend({}, config.servers.redis, config.redisOptions);
+  if(process.env.REDIS_PWD){
+    options.pass = process.env.REDIS_PWD;
+  }
+  options.cookie = {
+    maxage : null
+  };
+  return options;
 }

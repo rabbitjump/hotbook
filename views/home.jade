@@ -1,0 +1,56 @@
+extends ./layout
+
+
+mixin BannerList(items)
+  if items && items.length
+    .bannerContainer
+      ul
+        each item in items
+          .item
+            img(src='#{item}')
+      .dotList
+        each item in items
+          span.dot
+
+mixin RecommandBooks(items)
+  h3
+    .more.pull-right 更多
+      i.glyphicon.glyphicon-chevron-right
+    | 强力推荐
+    .border
+  ul
+    each item, i in items
+      if i === 0
+        li 
+          .cover.pull-left
+            img(src='#{item.cover}')
+          .content
+            .name #{item.name}
+            .infos
+              span.type #{item.type}
+              span.author #{item.author}
+            p.desc #{item.desc}
+      else
+        li
+          span.name #{item.name}
+          span.infos
+            span.type #{item.type}
+            span.author #{item.author}
+          p.desc #{item.desc}
+  
+block bodyContainer
+  .homePage(ng-controller='HomePageController')
+    header.header.text-center
+      .search
+        i.glyphicon.glyphicon-search
+      span 男生偏好
+        i.glyphicon.glyphicon-chevron-down
+    +BannerList(viewData.bannerList)
+
+    ul.categoryList
+      each category in viewData.categoryList
+        li: a.text-center(href='javascript:;') #{category}
+    .recommandBooks
+      +RecommandBooks(viewData.recommandBooks)
+  - importer.import('/js/home.js');
+  - importer.import('/css/home.css');
